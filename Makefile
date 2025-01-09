@@ -1,19 +1,20 @@
-CC = gcc
-CFLAGS = -Wall -std=c99 -O2
-LDFLAGS = -lm -lgmp
+CC = clang
+CFLAGS = -Wall -Wextra -std=c99 -pedantic
+LIBS = -lgmp -lm
 
-SRC = enigma.c
-OBJ = $(SRC:.c=.o)
-HEADER = ast.h crypto.h
-
+SRCS = crypto.c ast.c enigma.c
+OBJS = $(SRCS:.c=.o)
 TARGET = enigma
 
-$(TARGET): $(OBJ)
-	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
+.PHONY: all clean
 
-%.o: %.c $(HEADER)
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(TARGET)
-
+	rm -f $(OBJS) $(TARGET)
