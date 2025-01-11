@@ -15,13 +15,8 @@ typedef struct AST {
 } AST;
 
 /* Function prototypes */
-static AST *newNode(char op, double num, char *name, AST **args, int numArgs, AST *left, AST *right);
-static double parseNum(char **s);
-static AST *parseExpr(char **s);
-static AST *parseFactor(char **s);
-static AST *parseFunction(char **s);
-static AST *parseTerm(char **s);
-static double eval(AST *node);
+AST *parseExpr(char **s);
+double eval(AST *node);
 
 
 #endif /* AST_H */

@@ -111,29 +111,25 @@ void decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
 
 void rsa(const char* prime_str1, const char* prime_str2, const char* message) {
     mpz_t p, q, n, phi_n, e, d, m, c;
-
     mpz_inits(p, q, n, phi_n, e, d, m, c, NULL);
-
     /* Convert prime numbers from strings to mpz_t */
     mpz_set_str(p, prime_str1, 10);
     if (!is_prime(p)) {
         printf("p is not a prime number.\n");
         return;
     }
-
     mpz_set_str(q, prime_str2, 10);
     if (!is_prime(q)) {
         printf("q is not a prime number.\n");
         return;
     }
-
     /* Calculate RSA parameters */
     calculate_rsa_params(p, q, n, phi_n, e, d);
-
     /* Encrypt and decrypt each character */
     printf("Original message: %s\n", message);
     printf("Encrypted message: ");
-    for (int i = 0; i < strlen(message); i++) {
+    size_t len = strlen(message);
+    for (size_t i = 0; i < len; i++) {
         mpz_set_ui(m, message[i]);
         encrypt(c, m, e, n);
         gmp_printf("%Zd ", c);
@@ -145,14 +141,13 @@ void rsa(const char* prime_str1, const char* prime_str2, const char* message) {
     gmp_printf("RSA parameter phi_n: %Zd\n", phi_n);
     gmp_printf("RSA parameter d: %Zd\n", d);
     printf("\nDecrypted message: ");
-    for (int i = 0; i < strlen(message); i++) {
+    for (size_t i = 0; i < len; i++) {
         mpz_set_ui(m, message[i]);
         encrypt(c, m, e, n);
         decrypt(m, c, d, n);
         printf("%c", (char)mpz_get_ui(m));
     }
     printf("\n");
-
     mpz_clears(p, q, n, phi_n, e, d, m, c, NULL);
 }
 
