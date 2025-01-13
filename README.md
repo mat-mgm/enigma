@@ -1,7 +1,7 @@
 # Enigma cryptographic calculator
 A calculator providing support for basic mathematical operations and cryptographic functions written in C.
 
-<a href="url"><img src="https://github.com/jordii222/CalculadoraRSA/assets/157251726/e56a6851-4070-4717-9501-5f033aba9385" width=75% height=75%></a>
+<a href="url"><img src="images/logo.jpg" width=50% height=50%></a>
 
 ## Features
 **Basic mathematics:**
