@@ -178,3 +178,80 @@ char* big_prime(int bits) {
     gmp_randclear(randstate);
     return prime_str;
 }
+
+/* Function to generate a random key */
+static void otp_key(char *k, size_t len) {
+  srand(time(NULL)); /* Seed the random number generator */
+  for (size_t i = 0; i < len; i++) {
+    k[i] = rand() % 256; /* Generate a random byte (0 to 255) */
+  }
+}
+/* Encrypts a message using a one-time pad */
+static void otp_encrypt(const char *m, char *k, char *c, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    c[i] = m[i] ^ k[i];  /* Encrypt message */
+  }
+}
+/* Decrypts a cipher using a one-time pad */
+static void otp_decrypt(const char *c, const char *k, char *m, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    m[i] = c[i] ^ k[i]; /* Decrypt cipher */
+  }
+}
+/* Handles the one-time pad operations based on input */
+void one_time_pad(const char *m, const char *k, const char *c, size_t m_len, size_t k_len, size_t c_len) {
+  if (m_len > 0 && k_len == 0 && c_len == 0) {
+    /* Case 1: Only message is provided */
+    char generated_key[m_len];
+    char generated_cipher[m_len];
+    otp_key(generated_key, m_len); /* Generate a random key */
+    otp_encrypt(m, generated_key, generated_cipher, m_len); /* Encrypt the message */
+    printf("Original message: ");
+    fwrite(m, 1, m_len, stdout);
+    printf("\nGenerated key: ");
+    fwrite(generated_key, 1, m_len, stdout);
+    printf("\nEncrypted message: ");
+    fwrite(generated_cipher, 1, m_len, stdout);
+    char decrypted_message[m_len];
+    otp_decrypt(generated_cipher, generated_key, decrypted_message, m_len); /* Decrypt */
+    printf("\nDecrypted message: ");
+    fwrite(decrypted_message, 1, m_len, stdout);
+    printf("\n");
+  } else if (m_len > 0 && k_len > 0 && c_len == 0) {
+    /* Case 2: Message and key are provided */
+    if (m_len != k_len) {
+      fprintf(stderr, "Error: Message and key lengths must match.\n");
+      return;
+    }
+    char generated_cipher[m_len];
+    otp_encrypt(m, (char *)k, generated_cipher, m_len); /* Encrypt using the provided key */
+    printf("Original message: ");
+    fwrite(m, 1, m_len, stdout);
+    printf("\nProvided key: ");
+    fwrite(k, 1, k_len, stdout);
+    printf("\nEncrypted message: ");
+    fwrite(generated_cipher, 1, m_len, stdout);
+    char decrypted_message[m_len];
+    otp_decrypt(generated_cipher, k, decrypted_message, m_len); /* Decrypt */
+    printf("\nDecrypted message: ");
+    fwrite(decrypted_message, 1, m_len, stdout);
+    printf("\n");
+  } else if (m_len == 0 && k_len > 0 && c_len > 0) {
+    /* Case 3: Cipher and key are provided */
+    if (c_len != k_len) {
+      fprintf(stderr, "Error: Cipher and key lengths must match.\n");
+      return;
+    }
+    char decrypted_message[c_len];
+    otp_decrypt(c, k, decrypted_message, c_len); /* Decrypt the cipher */
+    printf("Provided cipher: ");
+    fwrite(c, 1, c_len, stdout);
+    printf("\nProvided key: ");
+    fwrite(k, 1, k_len, stdout);
+    printf("\nDecrypted message: ");
+    fwrite(decrypted_message, 1, c_len, stdout);
+    printf("\n");
+  } else {
+    fprintf(stderr, "Error: Invalid input combination.\n");
+  }
+}

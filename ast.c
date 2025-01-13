@@ -172,7 +172,7 @@ double eval(AST *node) {
         case '/':
             return eval(node->left) / eval(node->right);
         case 'f': {
-            if (strcmp(node->name, "cl") == 0) { /* clear terminal */
+                 if (strcmp(node->name, "cl") == 0) { /* clear terminal */
                 printf("\033[H\033[J");
                 return 0.0;
             } else if (strcmp(node->name, "exit") == 0 || strcmp(node->name, "quit") == 0 || strcmp(node->name, "q") == 0) { /* exit program */
@@ -229,7 +229,7 @@ double eval(AST *node) {
                 }
             } else if (strcmp(node->name, "rsa") == 0) {
                 if (node->numArgs != 3) {
-                    printf("Error: 'rsa' function expects 3 arguments\n");
+                    printf("Error: 'rsa' function expects 3 arguments\n\trsa(prime 1, prime 2, message)");
                     exit(1);
                 } else {
                     const char *prime1 = node->args[0]->name;
@@ -240,12 +240,27 @@ double eval(AST *node) {
                 }
             } else if (strcmp(node->name, "bigprime") == 0) {
                 if (node->numArgs != 1) {
-                    printf("Error: 'bigprime' function expects 1 argument\n");
+                    printf("Error: 'bigprime' function expects 1 argument\n\tbigprime(number of bits)\n");
                     exit(1);
                 } else {
                     int bits = (int)eval(node->args[0]);
                     printf("%s\n", big_prime(bits));
                     return 0.0; /* prime generation does not return a numerical value */
+                }
+            } else if (strcmp(node->name, "otp") == 0) {
+                if (node->numArgs < 1) {
+                    printf("Error: 'otp' function expects at least 1 argument\n\totp(message, key(optional), ciphertext(optional))\n");
+                    exit(1);
+                } else {
+                    const char *message = (node->args[0] && node->args[0]->name && node->args[0]->name[0] != '\0') ? node->args[0]->name : NULL;
+                    const char *key = (node->args[1] && node->args[1]->name && node->args[1]->name[0] != '\0') ? node->args[1]->name : NULL;
+                    const char *cipher = (node->args[2] && node->args[2]->name && node->args[2]->name[0] != '\0') ? node->args[2]->name : NULL;
+                    /* Pass the data to one_time_pad, handling the case where certain inputs are NULL */
+                    one_time_pad(message, key, cipher, 
+                                  (message ? strlen(message) : 0), 
+                                  (key ? strlen(key) : 0), 
+                                  (cipher ? strlen(cipher) : 0));
+                    return 0.0; /* OTP cipher does not return a numerical value */
                 }
             } else {
                 printf("Error: Unknown function\n");
