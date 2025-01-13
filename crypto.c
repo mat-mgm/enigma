@@ -99,12 +99,12 @@ void calculate_rsa_params(mpz_t p, mpz_t q, mpz_t n, mpz_t phi_n, mpz_t e, mpz_t
     }
 }
 
-void encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
+void rsa_encrypt(mpz_t c, mpz_t m, mpz_t e, mpz_t n) {
     /* Calculate c = m^e mod n */
     mpz_powm(c, m, e, n);
 }
 
-void decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
+void rsa_decrypt(mpz_t m, mpz_t c, mpz_t d, mpz_t n) {
     /* Calculate m = c^d mod n */
     mpz_powm(m, c, d, n);
 }
@@ -131,7 +131,7 @@ void rsa(const char* prime_str1, const char* prime_str2, const char* message) {
     size_t len = strlen(message);
     for (size_t i = 0; i < len; i++) {
         mpz_set_ui(m, message[i]);
-        encrypt(c, m, e, n);
+        rsa_encrypt(c, m, e, n);
         gmp_printf("%Zd ", c);
     }
     printf("\n");
@@ -143,8 +143,8 @@ void rsa(const char* prime_str1, const char* prime_str2, const char* message) {
     printf("\nDecrypted message: ");
     for (size_t i = 0; i < len; i++) {
         mpz_set_ui(m, message[i]);
-        encrypt(c, m, e, n);
-        decrypt(m, c, d, n);
+        rsa_encrypt(c, m, e, n);
+        rsa_decrypt(m, c, d, n);
         printf("%c", (char)mpz_get_ui(m));
     }
     printf("\n");

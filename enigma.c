@@ -19,11 +19,6 @@ int actio(void) {
   while (1) {
     printf("  >> ");
     fflush(stdout); /* Ensure the prompt is printed */
-    //(void)fgets(buffer, sizeof(buffer), stdin);
-    //if (feof(stdin) || ferror(stdin)) {
-    //  perror("Error reading from STDIN");
-    //  return 1;
-    //}
     if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
       /* Check if the error was due to EOF or a real error */
       if (feof(stdin)) {
@@ -35,6 +30,7 @@ int actio(void) {
           perror("Error reading from STDIN");
           return 1; /* Return on error or EOF */
       }
+      perror("Unkown error");
       return 1; /* Return on error or EOF */
     }
 
